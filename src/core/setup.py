@@ -1,9 +1,10 @@
 """
 Setup script for development environment.
 """
+
 import os
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -11,11 +12,7 @@ def run_command(command: str, cwd: str = None) -> bool:
     """Run a command and return success status."""
     try:
         result = subprocess.run(
-            command.split(),
-            cwd=cwd,
-            capture_output=True,
-            text=True,
-            check=True
+            command.split(), cwd=cwd, capture_output=True, text=True, check=True
         )
         print(f"✓ {command}")
         return True
@@ -35,7 +32,7 @@ def create_directories():
         "templates/code",
         "config",
     ]
-    
+
     for directory in directories:
         Path(directory).mkdir(parents=True, exist_ok=True)
         print(f"✓ Created directory: {directory}")
@@ -66,12 +63,12 @@ redis_url: redis://localhost:6379
 ENVIRONMENT=development
 SECRET_KEY=your-secret-key-change-this-in-production
 ENCRYPTION_KEY=your-encryption-key-change-this
-"""
+""",
     }
-    
+
     for file_path, content in config_files.items():
         if not os.path.exists(file_path):
-            with open(file_path, 'w') as f:
+            with open(file_path, "w") as f:
                 f.write(content.strip())
             print(f"✓ Created config file: {file_path}")
 
@@ -79,19 +76,19 @@ ENCRYPTION_KEY=your-encryption-key-change-this
 def install_dependencies():
     """Install Python dependencies."""
     print("Installing dependencies...")
-    
+
     # Install base dependencies
     if not run_command("pip install -e ."):
         return False
-    
+
     # Install development dependencies
     if not run_command("pip install -e .[dev]"):
         return False
-    
+
     # Install spaCy model
     if not run_command("python -m spacy download en_core_web_sm"):
         return False
-    
+
     return True
 
 
@@ -99,7 +96,7 @@ def setup_pre_commit():
     """Setup pre-commit hooks."""
     if not run_command("pre-commit install"):
         return False
-    
+
     print("✓ Pre-commit hooks installed")
     return True
 
@@ -113,26 +110,26 @@ def setup_database():
 def main():
     """Main setup function."""
     print("Setting up Virtual Assistant development environment...")
-    
+
     # Create directories
     create_directories()
-    
+
     # Create configuration files
     create_config_files()
-    
+
     # Install dependencies
     if not install_dependencies():
         print("❌ Failed to install dependencies")
         sys.exit(1)
-    
+
     # Setup pre-commit hooks
     if not setup_pre_commit():
         print("❌ Failed to setup pre-commit hooks")
         sys.exit(1)
-    
+
     # Setup database
     setup_database()
-    
+
     print("\n🎉 Setup completed successfully!")
     print("\nNext steps:")
     print("1. Start the virtual assistant: python -m src.main start")
